@@ -39,7 +39,7 @@ func main() {
 		Addr:    ":2112",
 		Handler: handler,
 	}
-	manager.AddWorker(process_manager.NewServerWorker("prometheu", server))
+	manager.AddWorker(process_manager.NewServerWorker("prometheus", server))
 
 	manager.StartAll()
 
