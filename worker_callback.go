@@ -62,7 +62,7 @@ func (w *CallbackWorker) Stop() error {
 	w.cancel()
 	w.isRunning = false
 
-	log.Infof("worker %s has been isRunning", w.name)
+	log.Infof("worker %s has been stopped", w.name)
 
 	return nil
 }
