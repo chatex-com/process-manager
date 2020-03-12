@@ -32,6 +32,21 @@ func main() {
 		}
 	}))
 
+	// Create a callback worker with retries
+	callbackWorker := process_manager.NewCallbackWorker("test with error", func(ctx context.Context) error {
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(time.Second):
+				return errors.New("test error")
+			}
+		}
+	}, true)
+	callbackWorker.Retries = 10 // When this param is missed manager will try restart in infinity loop
+	manager.AddWorker(callbackWorker)
+
+
 	// Create an example of server worker for prometheus
 	handler := mux.NewRouter()
 	handler.Handle("/metrics", promhttp.Handler())

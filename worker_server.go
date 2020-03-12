@@ -44,7 +44,10 @@ func (w *ServerWorker) Start() error {
 
 	w.lock.Unlock()
 
-	log.WithField("listen", w.server.Addr).Infof("%s: start server", w.name)
+	log.WithFields(log.Fields{
+		"listen": w.server.Addr,
+		"worker": w.name,
+	}).Info("start server worker")
 
 	err := w.server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
@@ -69,7 +72,7 @@ func (w *ServerWorker) Stop() error {
 
 	w.isRunning = false
 
-	log.Infof("%s: server has been stopped", w.name)
+	log.WithField("worker", w.name).Info("server has been stopped")
 
 	return err
 }
