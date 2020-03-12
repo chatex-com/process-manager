@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -19,6 +20,7 @@ type CallbackWorker struct {
 	lock         sync.Locker
 	RetryOnError bool
 	Retries      uint
+	RetryTimeout time.Duration
 	errors       uint
 }
 
@@ -73,6 +75,7 @@ func (w *CallbackWorker) Start() error {
 		}
 
 		log.WithError(err).WithField("worker", w.name).Error("retrying execution of callback during error")
+		<-time.After(w.RetryTimeout)
 	}
 
 	return nil

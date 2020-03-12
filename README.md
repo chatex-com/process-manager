@@ -38,12 +38,13 @@ func main() {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case <-time.After(time.Second):
+			case <-time.After(time.Millisecond):
 				return errors.New("test error")
 			}
 		}
 	}, true)
 	callbackWorker.Retries = 10 // When this param is missed manager will try restart in infinity loop
+	callbackWorker.RetryTimeout = time.Second // When it is omitted manager will try to run it immediately 
 	manager.AddWorker(callbackWorker)
 
 
