@@ -22,7 +22,7 @@ import (
 
 
 func main() {
-	manager := process_manager.NewManager()
+	manager := process.NewManager()
 
 	// Create a callback worker
 	manager.AddWorker(process_manager.NewCallbackWorker("test", func(ctx context.Context) error {

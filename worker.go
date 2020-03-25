@@ -1,4 +1,4 @@
-package process_manager
+package process
 
 type Worker interface {
 	// Run worker process in a current goroutine. An implementation

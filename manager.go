@@ -1,4 +1,4 @@
-package process_manager
+package process
 
 import (
 	"errors"
