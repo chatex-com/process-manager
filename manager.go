@@ -63,6 +63,7 @@ func (m *Manager) startWorker(w Worker) {
 	if err != nil {
 		log.WithError(err).Error("the channel raised an error")
 	}
+	m.wg.Done()
 }
 
 func (m *Manager) stop() bool {
@@ -95,7 +96,6 @@ func (m *Manager) StopAll() {
 		if err != nil {
 			log.WithError(err).Error("the channel raised an error")
 		}
-		m.wg.Done()
 	}
 }
 
