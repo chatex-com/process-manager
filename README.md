@@ -25,7 +25,7 @@ func main() {
 	manager := process.NewManager()
 
 	// Create a callback worker
-	manager.AddWorker(process_manager.NewCallbackWorker("test", func(ctx context.Context) error {
+	manager.AddWorker(process.NewCallbackWorker("test", func(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -33,7 +33,7 @@ func main() {
 	}))
 
 	// Create a callback worker with retries
-	callbackWorker := process_manager.NewCallbackWorker("test with error", func(ctx context.Context) error {
+	callbackWorker := process.NewCallbackWorker("test with error", func(ctx context.Context) error {
 		for {
 			select {
 			case <-ctx.Done():
@@ -55,15 +55,15 @@ func main() {
 		Addr:    ":2112",
 		Handler: handler,
 	}
-	manager.AddWorker(process_manager.NewServerWorker("prometheus", server))
+	manager.AddWorker(process.NewServerWorker("prometheus", server))
 
 	manager.StartAll()
 
 	WaitShutdown(manager)
 }
 
-func WaitShutdown(manager *process_manager.Manager) {
-	go func(manager *process_manager.Manager) {
+func WaitShutdown(manager *process.Manager) {
+	go func(manager *process.Manager) {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
