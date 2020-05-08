@@ -2,6 +2,7 @@ package process
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -43,6 +44,8 @@ func NewCallbackWorker(name string, cb CallbackFunc, retryOnError ...bool) *Call
 }
 
 func (w *CallbackWorker) Start() error {
+	defer log.WithField("worker", w.name).Info("callback worker has been stopped")
+
 	w.lock.Lock()
 	if w.isRunning {
 		w.lock.Unlock()
@@ -55,7 +58,7 @@ func (w *CallbackWorker) Start() error {
 	log.WithField("worker", w.name).Info("start callback worker")
 
 	for w.isRunning {
-		err := w.cb(w.ctx)
+		err := w.start()
 
 		if err == nil {
 			return nil
@@ -81,6 +84,23 @@ func (w *CallbackWorker) Start() error {
 	return nil
 }
 
+func (w *CallbackWorker) start() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
+			case string:
+				err = errors.New(v)
+			case error:
+				err = v
+			default:
+				err = errors.New("unknown error")
+			}
+		}
+	}()
+
+	return w.cb(w.ctx)
+}
+
 func (w *CallbackWorker) Stop() error {
 	w.lock.Lock()
 	defer w.lock.Unlock()
@@ -92,7 +112,7 @@ func (w *CallbackWorker) Stop() error {
 	w.cancel()
 	w.isRunning = false
 
-	log.WithField("worker", w.name).Info("worker has been stopped")
+	log.WithField("worker", w.name).Info("worker has got signal for stopping")
 
 	return nil
 }
